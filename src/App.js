@@ -1,9 +1,9 @@
 
 import { useEffect, useState } from 'react';
 import './App.css';
-import Home from './Home';
 import Web3 from 'web3';
 import contractJSON from "./json/QAForum.json"
+import HomeWrapper from './HomeWrapper';
 
 var config = require('@truffle/contract');
 
@@ -64,7 +64,7 @@ function App() {
 
   return (
     <div className="App">
-      {!isPending && <Home account={currentAccount} contract={currentContract} />}
+      {!isPending && <HomeWrapper account={currentAccount} contract={currentContract} />}
       {isPending && <div><h1>Loading.....</h1></div>}
     </div>
   );
