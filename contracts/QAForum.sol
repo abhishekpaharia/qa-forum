@@ -53,7 +53,7 @@ contract QAForum {
     event AnswerAccepted(uint indexed answerId, uint indexed questionId);
     event UserBanned(address user);
     event UserUnbanned(address user);
-    event TokensPurchased(address indexed user, uint amount);
+    event TokensPurchased(address indexed user, uint amount, uint updatedBalance);
     
     // Define modifiers
     modifier onlyModerator() {
@@ -96,7 +96,7 @@ contract QAForum {
             rp.safeMint(msg.sender);
         }
         users[msg.sender].balance += tokenCount;
-        emit TokensPurchased(msg.sender, tokenCount);
+        emit TokensPurchased(msg.sender, tokenCount, users[msg.sender].balance);
     }
     
     function banUser(address userAddress) public onlyModerator {

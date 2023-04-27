@@ -3,12 +3,15 @@ import { Alert } from "@mui/material";
 import Navbar from "./Navbar";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from "./Home";
+import CustomAlert from "./CustomAlert";
 
 
-const HomeWrapper = ({ account, contract }) => {
+const HomeWrapper = ({ account, contract, web3 }) => {
     const [isUser, setIsUser] = useState(true)
     const [userName, setUserName] = useState('')
     const [fetchedUserName, setFetchedUserName] = useState('')
+    const tokenPrice = 10 ** 18;
+    const [regStatus, setRegStatus] = useState(0)
 
     useEffect(() => {
         console.log("current account in home", account)
@@ -22,10 +25,12 @@ const HomeWrapper = ({ account, contract }) => {
 
     useEffect(() => {
         if (isUser) {
-            contract.users(account).then((user) => {
-                console.log(user)
-                setFetchedUserName(user.username)
-            })
+            contract.users(account)
+                .then((user) => {
+                    console.log(user)
+                    setFetchedUserName(user.username)
+                })
+                .catch(err => console.log())
 
         }
     }, [isUser, account])
@@ -40,43 +45,63 @@ const HomeWrapper = ({ account, contract }) => {
                     console.log("in success",)
                     setIsUser(true)
                     setUserName('')
-                    return (<Alert severity="success">registration done successfully</Alert>)
+                    setRegStatus(1)
                 }
                 else
-                    return (<Alert severity="error">registration not done successfully due to revert</Alert>)
+                    setRegStatus(-1)
             } else {
-                return (<Alert severity="error">registration failed</Alert>)
+                setRegStatus(-2)
             }
         })
             .catch(err => {
+                setRegStatus(-2)
                 console.log("register err", err)
-                return (<Alert severity="error">{err.message}</Alert>)
             })
     }
     return (
         <div>
             {!isUser &&
                 <div>
-                    <div>User's account address is {account}</div>
-                    <div className="register">
-                        <label>
+                    <h1>User's account address is {account}</h1>
+                    <div className="register" style={{ marginTop: 20 }}>
+                        <label style={{ fontSize: 20, margin: 5 }}>
                             User name
-                            <input
-                                name="userName"
-                                value={userName}
-                                onChange={(e) => setUserName(e.target.value)} />
                         </label>
-                        <button onClick={handleRegister}>Register</button>
+                        <input
+                            name="userName"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            style={{
+                                margin: 10,
+                                height: 20
+                            }}
+                        />
+                        <button onClick={handleRegister} style={{
+                            background: '#f1356d',
+                            color: '#fff',
+                            border: 0,
+                            padding: 8,
+                            borderRadius: 8,
+                            cursor: 'pointer',
+                        }}>Register</button>
+                    </div>
+                    <div>
+                        {regStatus === 1 && <CustomAlert type={"success"} message={"Registration is successful"} onClose={() => {
+                            setRegStatus(0)
+                        }} />}
+                        {regStatus === -1 && <CustomAlert type={"error"} message={"registration not done successfully due to revert"} onClose={() => setRegStatus(0)} />}
+                        {regStatus === -2 && <CustomAlert type={"error"} message={"registration failed"} onClose={() => setRegStatus(0)} />}
                     </div>
                 </div>
             }
-            {isUser &&
+            {
+                isUser &&
                 <div>
                     <Router>
                         <div className="App">
-                            <Navbar address={account} userName={fetchedUserName} />
+                            <Navbar account={account} userName={fetchedUserName} contract={contract} tokenPrice={tokenPrice} web3 ={web3}/>
                             <div className="content">
-                                <Home/>
+                                <Home />
                                 {/* <Routes>
                                     <Route></Route>
                                 </Routes> */}
@@ -85,7 +110,7 @@ const HomeWrapper = ({ account, contract }) => {
                     </Router>
                 </div>
             }
-        </div>
+        </div >
     )
 }
 
