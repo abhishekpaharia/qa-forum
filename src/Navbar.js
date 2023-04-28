@@ -9,7 +9,7 @@ import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import CustomAlert from "./CustomAlert";
 
-const Navbar = ({ userName, account, contract, tokenPrice, web3 }) => {
+const Navbar = ({ userName, account, contract, tokenPrice }) => {
     const [open, setOpen] = useState(false);
     const [NFTCount, setNFTCount] = useState(0)
     const [isMsg, setIsMsg] = useState(0)
@@ -28,7 +28,7 @@ const Navbar = ({ userName, account, contract, tokenPrice, web3 }) => {
     const handleBuyNFT = () => {
         contract.purchaseTokens(NFTCount, { from: account, value: NFTCount * tokenPrice })
             .then(res => {
-                console.log(res)
+                console.log("purchase token result ", res)
                 setIsMsg(1)
             })
             .catch(err => {
@@ -43,31 +43,53 @@ const Navbar = ({ userName, account, contract, tokenPrice, web3 }) => {
                 console.log("user balance ", user.balance.toString())
                 setBalance(user.balance.toString())
             })
-            .catch(err => console.log())
+            .catch(err => console.log(err))
     }, [account, contract])
 
     useEffect(() => {
-        //console.log("web3", web3)
+        console.log("web3")
         // web3.eth.subscribe('TokensPurchased', (a, b, c) => {
         //     console.log("event happend", a, b, c)
         // })
-        contract.TokensPurchased((error, result) => {
+        // contract.TokensPurchased((error, result) => {
+        //     //console.log('event error', error)
+        //     //console.log('resultsss', result)
+        //     if (!error) {
+        //         //console.log('tokenPurchased user = ', result.returnValues.user.toLowerCase())
+        //         //console.log('account =', account)
+        //         if (result.returnValues.user.toLowerCase() === account) {
+        //             setBalance(result.returnValues.updatedBalance)
+        //         }
+        //     }
+        // })
+
+        contract.BalanceUpdate((error, result) => {
             console.log('event error', error)
-            console.log('result', result)
+            console.log('resultsss', result)
+            if (!error) {
+                console.log('balance update user = ', result.returnValues.user.toLowerCase())
+                console.log('account =', account)
+                if (result.returnValues.user.toLowerCase() === account) {
+                    setBalance(result.returnValues.updatedBalance)
+                }
+            }
         })
-    },[])
+
+        contract.rp().then(res => console.log("rp", res))
+    }, [account, contract])
+
     return (
         <div style={{ flexDirection: 'column' }}>
             <div style={{ flexDirection: 'row' }}>
                 <nav className="navbar">
                     <h1>the web3 QA forum</h1>
                     <div className="links">
-                        <a href="/">Home</a>
-                        <a href="/create" style={{
+                        <Link to="/">Home</Link>
+                        <Link to="/create" style={{
                             color: 'white',
                             backgroundColor: '#f1356d',
                             borderRadius: '8px'
-                        }}>New question</a>
+                        }}>New question</Link>
                         <Button onClick={handleClickOpen} style={{
                             color: 'white',
                             backgroundColor: '#f1356d',

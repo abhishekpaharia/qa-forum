@@ -7,11 +7,10 @@ contract QAForum {
     // Define the structure for questions
     struct Question {
         uint id;
-        string title;
         string text;
         address questioner;
         uint reward;
-        uint [] answerIds;
+        uint[] answerIds;
         bool resolved;
     }
     
@@ -20,6 +19,8 @@ contract QAForum {
         uint id;
         string text;
         address answerer;
+        uint reward;
+        uint questionId;
         bool accepted;
     }
     
@@ -32,12 +33,14 @@ contract QAForum {
     }
     
     // Define variables
-    uint questionCounter = 1;
-    uint userCounter = 1;
-    uint answerCounter = 1;
+    uint usid=1; 
+    uint questionCounter;
+    uint answerCounter;
+    uint userCounter;
     mapping(uint => Question) public questions;
-    mapping(address => User) public users;
     mapping(uint => Answer) public answers;
+    mapping(address => User) public users;
+    mapping(address => bool) public moderators;
     uint public constant TOKEN_PRICE = 1e18 wei;
     RewardPoint public  rp;
     address public owner;
@@ -53,6 +56,16 @@ contract QAForum {
     event TokensPurchased(address indexed user, uint amount, uint updatedBalance);
     event BalanceUpdate(address indexed user, uint updatedBalance);
     
+    // Define modifiers
+    modifier onlyModerator() {
+        require(moderators[msg.sender], "You are not a moderator.");
+        _;
+    }
+    
+    modifier notBanned() {
+        require(!users[msg.sender].banned, "You are banned.");
+        _;
+    }
     
     // Functions for users
     
@@ -71,8 +84,9 @@ contract QAForum {
         require(bytes(username).length > 0, "Username should not be empty.");
         require(users[msg.sender].id == 0, "User already registered.");
         
-        users[msg.sender] = User(userCounter, username, 0, false);
+        usid++;
         userCounter++;
+        users[msg.sender] = User(userCounter, username, 0, false);
         emit UserRegistered(userCounter, username, 0);
     }
     
@@ -83,49 +97,46 @@ contract QAForum {
             rp.safeMint(msg.sender);
         }
         users[msg.sender].balance += tokenCount;
-        //emit TokensPurchased(msg.sender, tokenCount, users[msg.sender].balance);
+        emit TokensPurchased(msg.sender, tokenCount, users[msg.sender].balance);
         emit BalanceUpdate(msg.sender, users[msg.sender].balance);
     }
     
+    function banUser(address userAddress) public onlyModerator {
+        users[userAddress].banned = true;
+        emit UserBanned(userAddress);
+    }
+    
+    function unbanUser(address userAddress) public onlyModerator {
+        users[userAddress].banned = false;
+        emit UserUnbanned(userAddress);
+    }
     
     // Functions for questions
     
-    function askQuestion(string calldata title, string calldata text, uint rewardPoints) public returns(uint){
+    function askQuestion(string memory text, uint rewardPoints) public notBanned returns(uint){
         require(rewardPoints <= users[msg.sender].balance, "You don't have enough tokens.");
         rp.safeTransfer(msg.sender, address(this), rewardPoints);
         users[msg.sender].balance -= rewardPoints;
-        uint [] memory answerIds;
-        questions[questionCounter] = Question(questionCounter, title, text, msg.sender, rewardPoints, answerIds, false);
+        uint[] memory answerIds;
+        questions[questionCounter] = Question(questionCounter, text, msg.sender, rewardPoints, answerIds, false);
         //emit QuestionAsked(questionCounter, text, msg.sender);
         questionCounter++;
         emit BalanceUpdate(msg.sender, users[msg.sender].balance);
         return questionCounter -1;
     }
     
-    function resolveQuestion(uint questionId, uint anwserId) public {
+    function resolveQuestion(uint questionId) public notBanned {
         require(questions[questionId].questioner == msg.sender, "You are not the questioner.");
         require(!questions[questionId].resolved, "Question is already resolved.");
-        uint rewardPoints = questions[questionId].reward;
-
-        Answer memory ans = answers[anwserId];
-        address answerer = ans.answerer;
-        ans.accepted = true;
         questions[questionId].resolved = true;
-
-        rp.safeTransfer(address(this), answerer, rewardPoints);
-        users[answerer].balance += rewardPoints;
-
-        //emit QuestionResolved(questionId);
-        emit BalanceUpdate(answerer, users[answerer].balance);
-    }
-
-    function postAnswer(uint questionId, string memory text) public {
-        require(questions[questionId].resolved == false, "question already resolved");
-        require(questions[questionId].questioner != msg.sender, "can't answer your own question");
-        answers[answerCounter] = Answer(answerCounter, text, msg.sender, false);
-        questions[questionId].answerIds.push(answerCounter);
-        answerCounter++;
-        
+        uint rewardPoints = questions[questionId].reward;
+        rp.safeTransfer(address(this), msg.sender, rewardPoints);
+        users[answers[questions[questionId].answerIds[0]].answerer].balance += rewardPoints;
+        emit QuestionResolved(questionId);
     }
     
+    function upvoteQuestion(uint questionId) public notBanned {
+        require(questionId < questionCounter, "Question doesn't exist.");
+        users[questions[questionId].questioner].balance += 1;
+    }
 }

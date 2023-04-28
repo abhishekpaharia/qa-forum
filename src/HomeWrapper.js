@@ -4,9 +4,10 @@ import Navbar from "./Navbar";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from "./Home";
 import CustomAlert from "./CustomAlert";
+import Create from "./Create";
 
 
-const HomeWrapper = ({ account, contract, web3 }) => {
+const HomeWrapper = ({ account, contract }) => {
     const [isUser, setIsUser] = useState(true)
     const [userName, setUserName] = useState('')
     const [fetchedUserName, setFetchedUserName] = useState('')
@@ -14,11 +15,11 @@ const HomeWrapper = ({ account, contract, web3 }) => {
     const [regStatus, setRegStatus] = useState(0)
 
     useEffect(() => {
-        console.log("current account in home", account)
+        //console.log("current account in home", account)
         //console.log("contract", contract)
         //console.log("type", typeof (contract.isUser))
         contract.isUser({ from: account }).then((status) => {
-            console.log("status", status)
+            console.log("isUser", status)
             setIsUser(status)
         })
     }, [account, isUser, contract])
@@ -36,13 +37,13 @@ const HomeWrapper = ({ account, contract, web3 }) => {
     }, [isUser, account])
 
     const handleRegister = () => {
-        console.log("in handle register")
+        //console.log("in handle register")
         contract.registerUser(userName, { from: account }).then((result) => {
             console.log("register result", result)
-            console.log("result status", result.receipt.status)
+            //console.log("result status", result.receipt.status)
             if (result) {
                 if (result.receipt.status == true) {
-                    console.log("in success",)
+                    //console.log("in success",)
                     setIsUser(true)
                     setUserName('')
                     setRegStatus(1)
@@ -99,12 +100,12 @@ const HomeWrapper = ({ account, contract, web3 }) => {
                 <div>
                     <Router>
                         <div className="App">
-                            <Navbar account={account} userName={fetchedUserName} contract={contract} tokenPrice={tokenPrice} web3 ={web3}/>
+                            <Navbar account={account} userName={fetchedUserName} contract={contract} tokenPrice={tokenPrice} />
                             <div className="content">
-                                <Home />
-                                {/* <Routes>
-                                    <Route></Route>
-                                </Routes> */}
+                                <Routes>
+                                    <Route path="/" element={<Home account={account} contract={contract}/>} />
+                                    <Route path='/create' element={<Create account={account} contract={contract} />} />
+                                </Routes>
                             </div>
                         </div>
                     </Router>

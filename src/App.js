@@ -14,8 +14,8 @@ function App() {
   var accounts = null
   const [currentAccount, setCurrentAccount] = useState('')
   const [currentContract, setCurrentContract] = useState(null)
-  const [web3State, setWeb3State] = useState(null);
-  var url = 'http://127.0.0.1:7545'
+  //const [web3State, setWeb3State] = useState(null);
+  var url = 'ws://127.0.0.1:7545'
   var owner = null;
   window.ethereum.on('accountsChanged', (account) => {
     console.log("on account change", account)
@@ -31,17 +31,17 @@ function App() {
       web3Provider = web3.currentProvider;
     } else {
       // If no injected web3 instance is detected, fallback to the TestRPC
-      web3Provider = new Web3.providers.HttpProvider(url);
+      web3Provider = new Web3.providers.WebsocketProvider(url)
     }
     web3 = new Web3(web3Provider);
-    setWeb3State(web3)
+    //setWeb3State(web3)
 
     //-------------getting accounts----------------------------
     //window.ethereum.enable();
     accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     accounts = await web3.eth.getAccounts();
     //console.log(accounts)
-    //console.log("current", window.ethereum.selectedAddress)
+    console.log("current account", window.ethereum.selectedAddress)
     setCurrentAccount(window.ethereum.selectedAddress)
     //App.populateAddress();
     //return App.initContract();
@@ -66,7 +66,7 @@ function App() {
 
   return (
     <div className="App">
-      {!isPending && <HomeWrapper account={currentAccount} contract={currentContract} web3 = {web3State}/>}
+      {!isPending && <HomeWrapper account={currentAccount} contract={currentContract}/>}
       {isPending && <div><h1>Loading.....</h1></div>}
     </div>
   );

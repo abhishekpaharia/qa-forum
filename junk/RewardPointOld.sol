@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-//import "@openzeppelin/contracts@4.8.2/token/ERC721/ERC721.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+contract RewardPoint is ERC721 {
 
-contract RewardPoint is ERC721, IERC721Receiver {
-
-    uint public tokenIdCounter = 1;
-    mapping(address owner => uint[] tokenIds) public owner2tokenIds;
+    uint tokenIdCounter = 1;
+    mapping(address owner => uint[] tokenIds) owner2tokenIds;
 
     constructor() ERC721("RewardPoint", "RP") {
     }
@@ -22,7 +20,6 @@ contract RewardPoint is ERC721, IERC721Receiver {
         uint tokenId = tokenIdCounter;
         tokenIdCounter++;
         _safeMint(to, tokenId);
-        _setApprovalForAll(to, msg.sender, true);
         owner2tokenIds[to].push(tokenId);
     }
 
@@ -47,10 +44,9 @@ contract RewardPoint is ERC721, IERC721Receiver {
         uint256 fromTokenCount = balanceOf(from);
         require(fromTokenCount >= tokenCount);
         assert(fromTokenCount == owner2tokenIds[from].length);
-        //require(msg.sender == from, "msg sender is not same as owner of token");
         uint i = 0;
         for(; i<tokenCount; i++){
-            _transfer(from, to, owner2tokenIds[from][i]);
+            safeTransferFrom(from, to, owner2tokenIds[from][i]);
             owner2tokenIds[to].push(owner2tokenIds[from][i]);
         }
 
@@ -68,10 +64,5 @@ contract RewardPoint is ERC721, IERC721Receiver {
 
     function getInfo(address add) view public returns(uint){
         return owner2tokenIds[add].length;
-    }
-
-    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
-        return IERC721Receiver.onERC721Received.selector;
-        //return IERC721.onERC721Received.selector;
     }
 }
