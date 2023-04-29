@@ -31,7 +31,7 @@ const HomeWrapper = ({ account, contract }) => {
                     console.log(user)
                     setFetchedUserName(user.username)
                 })
-                .catch(err => console.log())
+                .catch(err => console.log(err))
 
         }
     }, [isUser, account])

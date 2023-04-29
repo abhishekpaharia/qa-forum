@@ -1,10 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomAlert from "./CustomAlert";
-const Create = ({account, contract}) => {
+const Create = ({ account, contract }) => {
   const [body, setBody] = useState('');
   const [title, setTitle] = useState('')
   const [quesWorth, setQuesWorth] = useState(1)
   const [isSuccess, setIsSucces] = useState(0)
+  const [quesId, setQuesId] = useState(0);
+
+  useEffect(() => {
+    contract.QuestionAsked((error, result) => {
+      //console.log('questionAsked error', error)
+      //console.log('questionAsked resultsss', result)
+      if (!error) {
+        console.log('balance update questioner = ', result.returnValues.questioner.toLowerCase())
+        console.log('account =', account)
+        if (result.returnValues.questioner.toLowerCase() === account) {
+          setQuesId(result.returnValues.questionId)
+        }
+      }
+    })
+  }, [account, contract])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,12 +28,14 @@ const Create = ({account, contract}) => {
     console.log("body: ", body)
     console.log("quesWorth", quesWorth)
     console.log("account in askQuestion: ", account)
-    contract.askQuestion(title, body, quesWorth, {from:account})
+    contract.askQuestion(title, body, quesWorth, { from: account })
       .then(res => {
-        console.log("ask question result", res);
+        //console.log("ask question result", res);
+        setIsSucces(1);
       })
       .catch(err => {
-        console.log("error in askQuestion" , err)
+        //console.log("error in askQuestion", err)
+        setIsSucces(-2);
       })
   }
 
@@ -26,7 +43,7 @@ const Create = ({account, contract}) => {
     <div className="create">
       <h2>Add a New Question</h2>
       <form onSubmit={handleSubmit}>
-      <label>Title:</label>
+        <label>Title:</label>
         <input
           required
           value={title}
@@ -56,7 +73,7 @@ const Create = ({account, contract}) => {
         />
         <button>Add Question</button>
       </form>
-      {isSuccess === 1 && <CustomAlert type="success" message="Question submitted" onClose={() => setIsSucces(0)} />}
+      {isSuccess === 1 && <CustomAlert type="success" message={"Question submitted with question id " + quesId} onClose={() => setIsSucces(0)} />}
       {isSuccess === -1 && <CustomAlert type="error" message="Not enough balance. purchase more RP" onClose={() => setIsSucces(0)} />}
       {isSuccess === -2 && <CustomAlert type="error" message="Question submission failed" onClose={() => setIsSucces(0)} />}
     </div>

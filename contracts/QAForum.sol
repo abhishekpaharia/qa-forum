@@ -32,9 +32,9 @@ contract QAForum {
     }
     
     // Define variables
-    uint questionCounter = 1;
-    uint userCounter = 1;
-    uint answerCounter = 1;
+    uint public questionCounter = 1;
+    uint public userCounter = 1;
+    uint public answerCounter = 1;
     mapping(uint => Question) public questions;
     mapping(address => User) public users;
     mapping(uint => Answer) public answers;
@@ -95,8 +95,10 @@ contract QAForum {
         rp.safeTransfer(msg.sender, address(this), rewardPoints);
         users[msg.sender].balance -= rewardPoints;
         uint [] memory answerIds;
+        // // uint[] memory arr2 = new uint[](newArrLength);
         questions[questionCounter] = Question(questionCounter, title, text, msg.sender, rewardPoints, answerIds, false);
-        //emit QuestionAsked(questionCounter, text, msg.sender);
+        questions[questionCounter].answerIds.push(1);
+        emit QuestionAsked(questionCounter, text, msg.sender);
         questionCounter++;
         emit BalanceUpdate(msg.sender, users[msg.sender].balance);
         return questionCounter -1;

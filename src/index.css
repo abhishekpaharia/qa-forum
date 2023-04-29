@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 .register {
-  flex:1;
+  flex: 1;
   padding: 20;
 }
 
@@ -10,6 +10,7 @@
   font-family: "Quicksand";
   color: #333;
 }
+
 .navbar {
   padding: 20px;
   display: flex;
@@ -18,17 +19,21 @@
   margin: 0 auto;
   border-bottom: 1px solid #f2f2f2;
 }
+
 .navbar h1 {
   color: #f1356d;
 }
+
 .navbar .links {
   margin-left: auto;
 }
+
 .navbar a {
   margin-left: 16px;
   text-decoration: none;
   padding: 6px;
 }
+
 .navbar a:hover {
   color: #f1356d;
 }
@@ -47,34 +52,65 @@
   border: 1px solid #ddd;
   border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 75px;
 }
+
 .blog-preview:hover {
-  box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
+  box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.1);
 }
+
 .blog-preview h2 {
   font-size: 20px;
   color: #f1356d;
   margin-bottom: 8px;
 }
-.blog-preview a{
+
+.blog-preview a {
   text-decoration: none;
 }
 
-.create, .blog-list {
+.blog-inside {
+  flex-direction: column;
+  justify-content: space-around;
+} 
+
+.blog-open {
+  background-color: aquamarine;
+  border-radius: 5px;
+  height: 25px;
+  width: 50px;
+}
+
+.blog-closed {
+  background-color: rgb(244, 64, 64);
+  border-radius: 5px;
+  height: 25px;
+  width: 60px;
+}
+.create,
+.blog-list {
   max-width: 600px;
   margin: 0 auto;
   text-align: center;
 }
+
 .create label {
   text-align: left;
   display: block;
 }
+
 .create h2 {
   font-size: 20px;
   color: #f1356d;
   margin-bottom: 30px;
 }
-.create input, .create textarea, .create select {
+
+.create input,
+.create textarea,
+.create select {
   width: 100%;
   padding: 6px 10px;
   margin: 10px 0;
@@ -82,6 +118,7 @@
   box-sizing: border-box;
   display: block;
 }
+
 .create button {
   background: #f1356d;
   color: #fff;
