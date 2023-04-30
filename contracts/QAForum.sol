@@ -97,7 +97,6 @@ contract QAForum {
         uint [] memory answerIds;
         // // uint[] memory arr2 = new uint[](newArrLength);
         questions[questionCounter] = Question(questionCounter, title, text, msg.sender, rewardPoints, answerIds, false);
-        questions[questionCounter].answerIds.push(1);
         emit QuestionAsked(questionCounter, text, msg.sender);
         questionCounter++;
         emit BalanceUpdate(msg.sender, users[msg.sender].balance);
@@ -111,7 +110,7 @@ contract QAForum {
 
         Answer memory ans = answers[anwserId];
         address answerer = ans.answerer;
-        ans.accepted = true;
+        answers[anwserId].accepted = true;
         questions[questionId].resolved = true;
 
         rp.safeTransfer(address(this), answerer, rewardPoints);
@@ -128,6 +127,10 @@ contract QAForum {
         questions[questionId].answerIds.push(answerCounter);
         answerCounter++;
         
+    }
+    
+    function getAnswerIds(uint questionId) public view returns (uint[] memory arr, uint len) {
+        return (questions[questionId].answerIds, questions[questionId].answerIds.length);
     }
     
 }

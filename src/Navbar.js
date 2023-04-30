@@ -47,7 +47,7 @@ const Navbar = ({ userName, account, contract, tokenPrice }) => {
     }, [account, contract])
 
     useEffect(() => {
-        console.log("web3")
+        //console.log("web3")
         // web3.eth.subscribe('TokensPurchased', (a, b, c) => {
         //     console.log("event happend", a, b, c)
         // })
@@ -68,7 +68,7 @@ const Navbar = ({ userName, account, contract, tokenPrice }) => {
             console.log('resultsss', result)
             if (!error) {
                 console.log('balance update user = ', result.returnValues.user.toLowerCase())
-                console.log('account =', account)
+                //console.log('account =', account)
                 if (result.returnValues.user.toLowerCase() === account) {
                     setBalance(result.returnValues.updatedBalance)
                 }
@@ -102,7 +102,7 @@ const Navbar = ({ userName, account, contract, tokenPrice }) => {
             <div style={{ flexDirection: 'column' }}>
                 <h2>User name : {userName}</h2>
                 <h2>Account : {account}</h2>
-                <h2>NFT Balance : {balance}</h2>
+                <h2>NFT Balance : {balance} {" RP"}</h2>
             </div>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Buy NFT</DialogTitle>

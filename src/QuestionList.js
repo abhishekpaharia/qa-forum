@@ -6,16 +6,16 @@ const QuestionList = ({ questions, title }) => {
             <h2>{title}</h2>
             {questions.map(question => (
                 <div className="blog-preview" key={question.id} >
-                    <a to={`/questions/${question.id}`}>
+                    <Link to={`/questions/${question.id}`}>
                         <div className="blog-inside">
                             <div style={{display:'flex ',flexDirection:'row',justifyContent:'space-between', alignItems:'center'}}>
                                 <h2>Q{question.id} : {question.title}</h2>
                                 {!question.resolved && <div className='blog-open'>open</div>}
                                 {question.resolved && <div className='blog-closed'>closed</div>}
                             </div>
-                            <p style={{ textAlign: 'left' }}>{question.text}</p>
+                            <p style={{ textAlign: 'left'}}>{question.text}</p>
                         </div>
-                    </a>
+                    </Link>
                 </div>
             ))}
         </div>

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Alert } from "@mui/material";
 import Navbar from "./Navbar";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Home from "./Home";
 import CustomAlert from "./CustomAlert";
 import Create from "./Create";
+import QuestionDetails from "./QuestionDetails";
 
 
 const HomeWrapper = ({ account, contract }) => {
@@ -14,6 +14,12 @@ const HomeWrapper = ({ account, contract }) => {
     const tokenPrice = 10 ** 18;
     const [regStatus, setRegStatus] = useState(0)
 
+    window.ethereum.on('accountsChanged', (account) => {
+        //console.log("on account change in homeWrapper", account)
+        //console.log('current url', window.location.pathname)
+        window.location.assign('/')
+      })
+      
     useEffect(() => {
         //console.log("current account in home", account)
         //console.log("contract", contract)
@@ -34,7 +40,7 @@ const HomeWrapper = ({ account, contract }) => {
                 .catch(err => console.log(err))
 
         }
-    }, [isUser, account])
+    }, [isUser, account, contract])
 
     const handleRegister = () => {
         //console.log("in handle register")
@@ -42,7 +48,7 @@ const HomeWrapper = ({ account, contract }) => {
             console.log("register result", result)
             //console.log("result status", result.receipt.status)
             if (result) {
-                if (result.receipt.status == true) {
+                if (result.receipt.status === true) {
                     //console.log("in success",)
                     setIsUser(true)
                     setUserName('')
@@ -105,6 +111,7 @@ const HomeWrapper = ({ account, contract }) => {
                                 <Routes>
                                     <Route path="/" element={<Home account={account} contract={contract}/>} />
                                     <Route path='/create' element={<Create account={account} contract={contract} />} />
+                                    <Route path='/questions/:id' element={<QuestionDetails account={account} contract={contract}/>} />
                                 </Routes>
                             </div>
                         </div>

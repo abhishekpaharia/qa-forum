@@ -3,7 +3,6 @@ import QuestionList from "./QuestionList";
 const Home = ({ account, contract }) => {
   const [isPending, setIsPending] = useState(true);
   const [questions, setQuestions] = useState(null)
-
   const func = async () => {
     let questCount = await contract.questionCounter()
     //console.log("quesCount", questCount.toString())
@@ -23,13 +22,37 @@ const Home = ({ account, contract }) => {
       ques.questioner = contractQues.questioner;
       let questionerUser = await contract.users(ques.questioner)
       ques.questionerName = questionerUser.username
+
+      //---- getting ansIds ---------------
+      let v1 = await contract.getAnswerIds(i);
+      // console.log("getAnswerIds return", v1);
+      // console.log("ans array length", v1.len.toString())
+      let ansArrLen = parseInt(v1.len.toString());
+
+      let ansArr = v1.arr;
+      let ansArrInt = [];
+      for (let j = 0; j < ansArrLen; j++) {
+        ansArrInt.push(parseInt(ansArr[j].toString()))
+        // console.log("ans arr value at ",j, " is ", v1.arr[j].toString())
+      }
+      ques.answerIds = ansArrInt;
+      //-----------getting ansIds ends -------------------
       //console.log("question", ques);
       questions.push(ques);
     }
+
     console.log("questions: ", questions)
     setQuestions(questions)
     setIsPending(false);
   }
+
+  const func2 = async () => {
+    let v1 = await contract.getAnswerIds(1)
+    console.log("getAnswerIds return", v1);
+    console.log("ans array length", v1.len.toString())
+    console.log("ans arr", v1.arr[3].toString())
+  }
+
   useEffect(() => {
     //console.log('use effect ran');
     // setTimeout(() => {
@@ -43,12 +66,17 @@ const Home = ({ account, contract }) => {
     //console.log(blogs);
 
     func()
+    //func2()
   }, [account, contract])
 
   return (
     <div className="home">
       {isPending && <div> Loading ... </div>}
-      {questions && <QuestionList title="Questions list" questions={questions} />}
+      {questions == null || questions.length === 0 ?
+        <h3 style={{ marginTop: '10px' }}> No Answers!!</h3>
+        :
+        <QuestionList title="Questions list" questions={questions} />
+      }
     </div>
   );
 }

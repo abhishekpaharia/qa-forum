@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import CustomAlert from "./CustomAlert";
+import { useNavigate } from "react-router-dom";
 const Create = ({ account, contract }) => {
   const [body, setBody] = useState('');
   const [title, setTitle] = useState('')
   const [quesWorth, setQuesWorth] = useState(1)
   const [isSuccess, setIsSucces] = useState(0)
   const [quesId, setQuesId] = useState(0);
+  const navigate = useNavigate()
 
   useEffect(() => {
     contract.QuestionAsked((error, result) => {
@@ -24,18 +26,22 @@ const Create = ({ account, contract }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     //console.log(contract)
-    console.log("title: ", title)
-    console.log("body: ", body)
-    console.log("quesWorth", quesWorth)
-    console.log("account in askQuestion: ", account)
+    // console.log("title: ", title)
+    // console.log("body: ", body)
+    // console.log("quesWorth", quesWorth)
+    // console.log("account in askQuestion: ", account)
     contract.askQuestion(title, body, quesWorth, { from: account })
       .then(res => {
         //console.log("ask question result", res);
         setIsSucces(1);
       })
       .catch(err => {
-        //console.log("error in askQuestion", err)
-        setIsSucces(-2);
+        console.log("error in askQuestion", err.message)
+        if (err.message.includes("You don't have enough tokens")) {
+          setIsSucces(-1)
+        } else {
+          setIsSucces(-2);
+        }
       })
   }
 
@@ -73,7 +79,7 @@ const Create = ({ account, contract }) => {
         />
         <button>Add Question</button>
       </form>
-      {isSuccess === 1 && <CustomAlert type="success" message={"Question submitted with question id " + quesId} onClose={() => setIsSucces(0)} />}
+      {isSuccess === 1 && <CustomAlert type="success" message={"Question submitted with question id " + quesId} onClose={() => { setIsSucces(0); navigate('/') }} />}
       {isSuccess === -1 && <CustomAlert type="error" message="Not enough balance. purchase more RP" onClose={() => setIsSucces(0)} />}
       {isSuccess === -2 && <CustomAlert type="error" message="Question submission failed" onClose={() => setIsSucces(0)} />}
     </div>
