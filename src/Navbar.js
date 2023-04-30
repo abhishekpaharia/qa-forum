@@ -41,7 +41,7 @@ const Navbar = ({ userName, account, contract, tokenPrice }) => {
         contract.users(account)
             .then((user) => {
                 console.log("user balance ", user.balance.toString())
-                setBalance(user.balance.toString())
+                setBalance(parseInt(user.balance.toString()))
             })
             .catch(err => console.log(err))
     }, [account, contract])
@@ -68,9 +68,12 @@ const Navbar = ({ userName, account, contract, tokenPrice }) => {
             console.log('resultsss', result)
             if (!error) {
                 console.log('balance update user = ', result.returnValues.user.toLowerCase())
-                //console.log('account =', account)
+                console.log('account =', account)
                 if (result.returnValues.user.toLowerCase() === account) {
-                    setBalance(result.returnValues.updatedBalance)
+                    let updatdBalance = parseInt(result.returnValues.updatedBalance)
+                    console.log("update balance", updatdBalance)
+                    setBalance(updatdBalance)
+                    console.log("sate var balance ", balance)
                 }
             }
         })

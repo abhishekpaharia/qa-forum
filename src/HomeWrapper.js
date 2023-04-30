@@ -14,12 +14,6 @@ const HomeWrapper = ({ account, contract }) => {
     const tokenPrice = 10 ** 18;
     const [regStatus, setRegStatus] = useState(0)
 
-    window.ethereum.on('accountsChanged', (account) => {
-        //console.log("on account change in homeWrapper", account)
-        //console.log('current url', window.location.pathname)
-        window.location.assign('/')
-      })
-      
     useEffect(() => {
         //console.log("current account in home", account)
         //console.log("contract", contract)

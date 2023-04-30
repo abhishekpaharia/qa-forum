@@ -46,12 +46,12 @@ const Home = ({ account, contract }) => {
     setIsPending(false);
   }
 
-  const func2 = async () => {
-    let v1 = await contract.getAnswerIds(1)
-    console.log("getAnswerIds return", v1);
-    console.log("ans array length", v1.len.toString())
-    console.log("ans arr", v1.arr[3].toString())
-  }
+  // const func2 = async () => {
+  //   let v1 = await contract.getAnswerIds(1)
+  //   console.log("getAnswerIds return", v1);
+  //   console.log("ans array length", v1.len.toString())
+  //   console.log("ans arr", v1.arr[3].toString())
+  // }
 
   useEffect(() => {
     //console.log('use effect ran');
@@ -73,7 +73,7 @@ const Home = ({ account, contract }) => {
     <div className="home">
       {isPending && <div> Loading ... </div>}
       {questions == null || questions.length === 0 ?
-        <h3 style={{ marginTop: '10px' }}> No Answers!!</h3>
+        <h3 style={{ marginTop: '10px' }}> No Questions yet!!</h3>
         :
         <QuestionList title="Questions list" questions={questions} />
       }
