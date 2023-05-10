@@ -85,7 +85,7 @@ module.exports = {
      //
      // Useful for deploying to a public network.
      // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
-     goerli: {
+     sepolia: {
        provider: () => new HDWalletProvider(mnemonic, `https://sepolia.infura.io/v3/c40ff2a3a1de4454a3c38c7746915204`),
        network_id: 11155111,
        gas: 4000000
